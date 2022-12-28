@@ -3,7 +3,7 @@ TAG?=18-alpine
 docker:
 	docker build \
 		. \
-		-t mwnet2023/node:${TAG} \
+		-t 11tybase/node:${TAG} \
 		--build-arg TAG=${TAG} \
 		--no-cache
 npm:
@@ -14,7 +14,7 @@ npm:
 		-p 8080:8080 \
 		-p 3001:3001 \
 		-v `pwd`:/app \
-		mwnet2023/node:${TAG} \
+		11tybase/node:${TAG} \
 		$(filter-out $@,$(MAKECMDGOALS))
 %:
 	@:

@@ -22,8 +22,7 @@ Run things as:
 
 - `make docker` (once only to build the dockerfile)
 - `make npm install` (to install the NPM stuff)
-  - BUG: this seems to loop forever?
-- `make npm run xxx` xxx is any script in the config
+- `make npm run xxx` xxx is any script in the `package.json` config
 
 ## Notes
 
