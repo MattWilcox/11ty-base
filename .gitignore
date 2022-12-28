@@ -1,3 +1,18 @@
+### actual stuff ###
 node_modules
 dist/*
 !dist/.gitkeep
+
+### OSX stuff ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+### Vim stuff ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
