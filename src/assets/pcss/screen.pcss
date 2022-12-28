@@ -1,0 +1,733 @@
+/* imports have to be at the top */
+@import "reset.pcss";
+@import "base-rules.pcss";
+
+/* Individual UI components
+@import "components/colors.pcss";
+@import "components/fonts.pcss";
+@import "components/cms-textblock.pcss";
+@import "components/mixed-content.pcss";
+@import "legacy/ajax-popups.pcss";
+ */
+
+/* Handy tricks with modern CSS
+	.container:not(:has(*)) {
+		selects any container with no child elements
+	}
+
+	.container:has(> :last-child:nth-child(N)) {
+		selects any container with exactly N child elements
+	}
+*/
+
+/* visualise layout helper classes
+	.dev-mode *[class*='l_'] {
+		outline: 1px solid red;
+		&::after {
+			position: absolute;
+			content: attr(class);
+			font-size: 0.6rem;
+			background-color: gray; color: white;
+			padding: 0.5em;
+		}
+	}
+*/
+
+
+
+.devWarning {
+	position: absolute; top: 0; left: 0; right: 0;
+	padding: 0.5em 1em;
+	text-align: center; background: rebeccapurple; color: white;
+	animation: fadeOut 0.3s 2s both; pointer-events: none;
+}
+
+/* stop transitions playing on page load */
+	html:not( .load-complete ) * {
+		transition: none !important;
+	}
+
+/* accessibility */
+	.skiplink {
+		&:focus {
+			position: fixed; left: 0;
+			width: 100vw; height: auto; padding: 1ch;
+			background-color: yellow; color: navy; text-align: center;
+			outline: 0;
+		}
+	}
+
+/* responsive embed container
+   https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio
+   https://web.dev/aspect-ratio/ */
+
+	.embedContainer {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+
+		@supports not (aspect-ratio: 1 / 1) {
+			/* 4:3 ratio (olden standard ratio) */
+			height: 0; padding-bottom: 75%; max-width: 100%;
+		}
+
+		& iframe,
+		& object,
+		& embed,
+		& > div {
+			position: absolute; top: 0; left: 0;
+			width: 100% !important; height: 100% !important;
+
+			& * {
+				box-sizing: content-box;
+			}
+
+			& img {
+				width: auto; max-width: none;
+			}
+		}
+
+		&.widescreen { /* 16:9 ratio (common TV/Video ratio) */
+			@supports (aspect-ratio: 1 / 1) {
+				aspect-ratio: 16 / 9;
+			}
+			@supports not (aspect-ratio: 1 / 1) {
+				padding-bottom: 56.25%;
+			}
+		}
+
+		&.cinema185 { /* 1.85:1 */
+			@supports (aspect-ratio: 1 / 1) {
+				aspect-ratio: 1.85 / 1;
+			}
+			@supports not (aspect-ratio: 1 / 1) {
+				padding-bottom: 54.05405405%;
+			}
+		}
+
+		&.cinema239 { /* 2.39:1 */
+			@supports (aspect-ratio: 1 / 1) {
+				aspect-ratio: 2.39 / 1;
+			}
+			@supports not (aspect-ratio: 1 / 1) {
+				padding-bottom: 43%;
+			}
+		}
+	}
+
+/* social media icons */
+	.sm {
+		& ul {
+			display: flex; align-items: center; flex-wrap: wrap; gap: calc( 0.5 * var(--gap) );
+			list-style: none;
+			margin-bottom: 0;
+		}
+
+		& li {
+			& a {
+				display: block;
+				transition: all .3s; transform-origin: 50% 50%;
+			}
+			& span {
+				/* @include hide-element; */
+			}
+		}
+
+		& svg {
+			display: block;
+		}
+
+		&.brand-compliant {
+			& a {
+				width: 42px;
+
+				&:hover,
+				&:focus {
+					transform: scale(1.1);
+				}
+			}
+
+			& svg {
+				width: 42px; height: 42px;
+			}
+		}
+
+		&.outline	{
+			& a {
+				width: 36px;
+
+				&:hover,
+				&:focus {
+					transform: scale(1.1);
+				}
+			}
+
+			& svg {
+				width: 36px; height: 36px;
+
+				& path,
+				& circle {
+					fill: currentColor;
+				}
+			}
+		}
+	}
+
+/* seomatic opening hours */
+	.seomatic-opening-hours {
+		& li {
+			display: flex;
+
+			& .day {
+				width: 3em;
+			}
+
+			& .closes {
+				&:before {
+					content: " - ";
+				}
+			}
+		}
+	}
+
+/* pagination-controls */
+	.pagination-controls {
+		border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1em; margin-top: 1em;
+
+		& h3 {
+			/* @include hide-element; */
+		}
+
+		& ul {
+			display: flex; justify-content: space-between;
+			list-style: none;
+
+			& li.prev {
+				align-self: flex-start;
+			}
+			& li.next {
+				align-self: flex-end;
+				text-align: right;
+			}
+		}
+	}
+
+/* pendingTranslation */
+	.pendingTranslation {
+		color: red;
+	}
+
+/* Actual design! */
+	a.ui-effect,
+	.cms-textblock a {
+		position: relative;
+		display: inline-block;
+
+		&::before {
+			position: absolute; inset: -0.1em -0.2em; z-index: -1;
+			content: ""; display: block;
+			background-color: currentColor; opacity: 0.1; border-radius: 0.25em;
+			transform-origin: bottom right; transform: scaleX(0);
+			transition: transform var(--fast) ease;
+		}
+
+		&:hover {
+			&::before {
+				transform-origin: bottom left;
+				transform: scaleX(1);
+			}
+		}
+	}
+
+
+
+	dialog#lightbox {
+		inset: clamp(1vw, 10%, 10vh) clamp(1vw, 10%, 10vh);
+
+		&::backdrop {
+			background-color: hsl( 0 0% 0% / 0.66 );
+			backdrop-filter: blur(0.2rem);
+		}
+
+		& form {
+			position: absolute; top: 0; right: 0;
+			z-index: 2;
+		}
+	}
+
+/*	html.js-supportsIntersectionObserver {
+		& [data-reveal-on-scroll] { !* opacity is safe to animate for everyone *!
+			will-change: opacity, filter, translate;
+			opacity: 0.2; filter: grayscale(1);
+			transition: all var(--slow, 0.6s); transition-delay: 0.1s;
+
+			&.js-inViewport {
+				opacity: 1; filter: grayscale(0);
+			}
+		}
+
+		@media screen and (prefers-reduced-motion: no-preference) { !* only animate motion if the user is OK with it *!
+			& [data-reveal-on-scroll] {
+				transform: translateY(-50px);
+
+				&.js-inViewport {
+					transform: translateY(0);
+				}
+			}
+		}
+	}*/
+
+
+	html {
+		background: hsl( var(--dark-grey) );
+		color: hsl( var(--gold) );
+	}
+
+	.site_title {
+
+		width: 70px;
+		& span {
+			display: none;
+		}
+		@container (min-width: 960px) {
+			width: 100px;
+		}
+		@container (min-width: 1200px) {
+			width: 120px;
+		}
+	}
+
+	.section {
+		container-type: inline-size;
+	}
+
+	.leftContainer {
+		margin-left: 5%;
+		container-type: inline-size;
+
+		&.paddedRight {
+			padding-right: 5%;
+		}
+	}
+
+	@media only screen and (min-width: 640px) {
+		.leftContainer {
+			margin-left: 10%;
+			&.paddedRight {
+				padding-right: 10%;
+			}
+		}
+	}
+
+
+
+
+	.centerContainer {
+		margin-left: 5%;
+		margin-right: 5%;
+		display: grid;
+		@container (min-width: 640px) {
+			margin-left: 10%;
+			margin-right: 10%;
+		}
+	}
+
+
+
+	header {
+		& .site_title {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+	}
+
+	@media only screen and (min-width: 640px) {
+		header {
+			& .site_title {
+				margin-top: 40px;
+				margin-bottom: 40px;
+			}
+		}
+	}
+
+	h2 {
+		font-family: var(--font-family-butler);
+		font-size: 36px;
+	}
+
+	h3 {
+		font-family: var(--font-family-butler);
+		font-size: 24px;
+		line-height: 24px;
+	}
+
+	footer {
+		padding-top: 40px;
+		padding-bottom: 40px;
+		font-size: 11px;
+		& p {
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			font-weight: 500;
+		}
+		& .leftContainer {
+			border-bottom: 1px solid hsl( var(--gold) );
+			padding-bottom: 40px;
+			& .logo {
+				& svg {
+					width: 50px;
+				}
+			}
+			@container (min-width: 512px) {
+				& .inner {
+					display: grid;
+					grid-gap: 20px;
+					grid-template-columns: repeat(3, 1fr);
+					& .logo {
+						grid-column: span 3;
+					}
+				}
+
+			}
+			@container (min-width: 800px) {
+				& .inner {
+					grid-template-columns: repeat(8, 1fr);
+					& .logo {
+						grid-column: span 2;
+						& svg {
+							width: 80px
+						}
+					}
+					& .location, & .contact, & .social {
+						grid-column: span 2;
+					}
+				}
+			}
+			@container (min-width: 1000px) {
+				& .inner {
+					grid-template-columns: repeat(12, 1fr);
+					& .logo {
+						grid-column: span 8; /* should be 6 when we put the contact column back in the footer */
+					}
+					& .location, & .contact, & .social {
+						grid-column: span 2;
+					}
+				}
+			}
+		}
+		& h3 {
+			margin-bottom: 10px;
+		}
+	}
+
+	.sliderGallery {
+		margin-top: 40px;
+	}
+
+	.bigText {
+		margin-bottom: 40px;
+	}
+
+	@media only screen and (max-width: 639px) {
+		footer {
+			& .inner {
+				display: grid;
+				grid-gap: 20px;
+			}
+		}
+	}
+
+	@media only screen and (min-width: 640px) {
+		footer {
+			padding-top: 80px;
+		}
+
+		.sliderGallery {
+			margin-top: 80px;
+		}
+
+		.bigText {
+			margin-bottom: 80px;
+		}
+	}
+
+	@media only screen and (min-width: 960px) {
+		footer {
+			padding-top: 100px;
+		}
+
+		.sliderGallery {
+			margin-bottom: 100px;
+		}
+	}
+
+	@media only screen and (min-width: 1200px) {
+		footer {
+			padding-top: 120px;
+		}
+
+		.sliderGallery {
+			margin-top: 120px;
+		}
+
+		.bigText {
+			margin-bottom: 120px;
+		}
+	}
+
+	.sixtyImage {
+		position: relative;
+		display: flex;
+
+		& picture, & img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		& .bigSixty {
+			font-family: var(--font-family-butler);
+			font-size: 72px;
+			line-height:0px;
+			position: absolute;
+			bottom: 0%;
+			right: 0px;
+			z-index: 1;
+			transform: translateY(0%);
+			font-weight: bold;
+		}
+	}
+
+	.dukeSt {
+		& h3 {
+			font-size: 36px;
+			margin-bottom: 20px;
+		}
+	}
+
+	a.button {
+		display: inline-block;
+		border: 1px solid hsl( var(--gold) );
+		padding: 12px 14px;
+		text-transform: uppercase;
+		letter-spacing: 3px;
+		margin-top: 20px;
+		font-size: 14px;
+		&:hover, &:focus {
+			background: hsl( var(--gold) );
+			color: hsl( var(--dark-grey) );
+		}
+	}
+
+	@keyframes scale {
+		from {
+		  transform: scale(1.3);
+		}
+
+		to {
+		  transform: scale(1);
+		}
+	  }
+
+	.overlappingGrid {
+		& img {
+			animation: scale 30s infinite;
+			animation-direction: alternate;
+		}
+		& .image {
+			overflow: hidden;
+		}
+		& .otherImage {
+			& .image {
+				& img {
+					animation-delay: 3s;
+				}
+			}
+		}
+	}
+
+
+	@media only screen and (max-width: 639px) {
+		.overlappingGrid {
+			display: grid;
+			grid-gap: 40px;
+		}
+	}
+
+	@media only screen and (min-width: 640px) {
+		.overlappingGrid {
+			display: grid;
+			grid-gap: 30px;
+			grid-template-columns: repeat(6, 1fr);
+			grid-template-rows: repeat(6, 1fr);
+			& .sixtyImage, & .extraText, & .dukeSt, & .otherImage  {
+				grid-column: 1 / span 3;
+			}
+			& .sixtyImage {
+				grid-column: 1 / span 3;
+				grid-row: span 3;
+			}
+			& .dukeSt {
+				grid-column: 1 / span 3;
+				grid-row: 4 / span 2;
+			}
+			& .extraText {
+				grid-column: 4 / span 3;
+				grid-row: 1 / span 2;
+			}
+
+			& .otherImage {
+				grid-column: 4 / span 3;
+				grid-row: 3 / span 2;
+			}
+		}
+		.sixtyImage {
+			& .bigSixty {
+				font-size: 96px;
+			}
+		}
+
+		.dukeSt {
+			& h3 {
+				font-size: 48px;
+				margin-bottom: 20px;
+			}
+		}
+	}
+	@media only screen and (min-width: 960px) {
+		.overlappingGrid {
+			display: grid;
+			grid-gap: 20px;
+			grid-template-columns: repeat(12, 1fr);
+			grid-template-rows: repeat(10, 1fr);
+			& .sixtyImage  {
+				grid-column: span 5;
+
+			}
+
+			& .sixtyImage {
+				grid-row: span 7;
+			}
+
+			& .dukeSt {
+				grid-column: 1 / span 5;
+				grid-row: 9 / span 2;
+			}
+
+			& .extraText {
+				grid-column: 7 / span 6;
+				grid-row: 1 / span 3;
+			}
+			& .otherImage {
+				grid-column: 7 / span 6;
+				grid-row: 4 / span 5;
+			}
+		}
+		.sixtyImage {
+			& .bigSixty {
+				font-size: 140px;
+			}
+		}
+	}
+
+	@media only screen and (min-width: 960px) {
+		.sixtyImage {
+			& .bigSixty {
+				font-size: 180px;
+			}
+		}
+	}
+
+	.bigText {
+		z-index: 2;
+		position: relative;
+		margin-top: -20px;
+		& h2 {
+			font-size: 40px;
+			line-height: 46px;
+		}
+	}
+
+	@media only screen and (min-width: 480px) {
+		.bigText {
+			margin-top: -34px;
+			& h2 {
+				font-size: 60px;
+				line-height: 66px;
+			}
+		}
+	}
+
+	@media only screen and (min-width: 640px) {
+		.bigText {
+			margin-top: -46px;
+			& h2 {
+				font-size: 80px;
+				line-height: 86px;
+			}
+		}
+	}
+
+	@media only screen and (min-width: 960px) {
+		.bigText {
+			margin-top: -46px;
+			& h2 {
+				font-size: 90px;
+				line-height: 96px;
+				&:nth-child(2n) {
+					margin-left: 40px;
+				}
+			}
+		}
+	}
+
+	@media only screen and (min-width: 1200px) {
+		.bigText {
+			margin-top: -46px;
+			& h2 {
+				font-size: 120px;
+				line-height: 126px;
+				&:nth-child(2n) {
+					margin-left: 100px;
+				}
+			}
+		}
+	}
+	@media only screen and (min-width: 1400px) {
+		.bigText {
+			margin-top: -70px;
+			& h2 {
+				font-size: 140px;
+				line-height: 146px;
+				&:nth-child(2n) {
+					margin-left: 120px;
+				}
+			}
+		}
+	}
+
+
+
+	.featureImage {
+		overflow: hidden;
+		& img {
+			animation: scale 30s infinite;
+			animation-direction: alternate;
+		}
+	}
+
+	.animateIn {
+		opacity: 0;
+		transition: all ease 0.3s;
+		animation-delay: 0.5s;
+		&.js-inViewport {
+			opacity: 1;
+		}
+	}
+
+	.footerCredit {
+		padding-top: 20px;
+		& .leftContainer {
+			border-bottom: 0px;
+			opacity: 0.4;
+		}
+	}

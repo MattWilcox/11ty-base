@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Test Page</title>
+
+		<!-- This does not spit out anything -->
+		<style src="/assets/pcss/screen.css"></style>
+
+		<style @raw="getCss(page.url)" webc:keep></style>
+		<script @raw="getJs(page.url)" webc:keep></script>
+	</head>
+
+	<body @html="content"></body>
+</html>
